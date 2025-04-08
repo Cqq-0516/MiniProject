@@ -3,7 +3,7 @@ services:
     name: risk-map-dashboard
     env: python
     buildCommand: ""
-    startCommand: gunicorn app:app
+    startCommand: gunicorn app:server
     plan: free
     branch: main
     autoDeploy: true

@@ -12,10 +12,9 @@ df["date"] = pd.to_datetime(df["date"])
 df["year"] = df["date"].dt.year
 df["Region"] = df["Region"].fillna("Unknown")
 
-# Initialize app
-external_stylesheets = [dbc.themes.CYBORG]
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-application = app.server  # this is critical for Render to detect 'app:app'
+# Initialize Dash app
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+server = app.server  # This is the key for gunicorn app:server to work
 
 app.layout = dbc.Container([
     dbc.Row([
