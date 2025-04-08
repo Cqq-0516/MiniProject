@@ -15,7 +15,7 @@ df["Region"] = df["Region"].fillna("Unknown")
 # Initialize app
 external_stylesheets = [dbc.themes.CYBORG]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
+application = app.server  # this is critical for Render to detect 'app:app'
 
 app.layout = dbc.Container([
     dbc.Row([
@@ -72,7 +72,6 @@ def update_visuals(region):
     if region:
         dff = dff[dff["Region"] == region]
 
-    # Sunburst chart
     sb_data = dff[dff["total_casualties"] > 0].copy()
     max_cas = sb_data["total_casualties"].max()
     bins = [0, 1, 5, 10, 20, 50, 100, 200, 500, 1000]
@@ -88,20 +87,17 @@ def update_visuals(region):
                          title="⚠️ Casualty Distribution")
     fig_sb.update_layout(template="plotly_dark", title_x=0.5)
 
-    # Treemap chart
     treedata = dff[dff["Means of attack"].notna() & dff["Attack context"].notna()]
     tree_grouped = treedata.groupby(["Means of attack", "Attack context"]).size().reset_index(name="count")
     fig_tree = px.treemap(tree_grouped, path=["Means of attack", "Attack context"], values="count",
                           color="count", color_continuous_scale="Reds", title="🎯 Attack Method vs. Context")
     fig_tree.update_layout(template="plotly_dark", title_x=0.5)
 
-    # Choropleth map
     heatdata = dff.groupby("Country").size().reset_index(name="count")
     fig_map = px.choropleth(heatdata, locations="Country", locationmode="country names",
                             color="count", color_continuous_scale="Plasma", title="🌍 Global Incidents")
     fig_map.update_layout(template="plotly_dark", title_x=0.5)
 
-    # Monthly trend
     trend = dff.groupby(dff["date"].dt.to_period("M")).agg({
         "Incident ID": "count",
         "total_casualties": "sum"
@@ -113,19 +109,17 @@ def update_visuals(region):
     ])
     fig_trend.update_layout(template="plotly_dark", title="📈 Monthly Trends", title_x=0.5, hovermode="x unified")
 
-    # Animated chart by year
     yearwise = dff.groupby(["year", "Region"]).agg({"Incident ID": "count"}).reset_index()
     fig_anim = px.bar(yearwise, x="Region", y="Incident ID", color="Region", animation_frame="year",
                       title="📊 Incident Frequency Animation by Region", template="plotly_dark")
     fig_anim.update_layout(title_x=0.5)
 
-    # Actor profile
     actor = dff.groupby("Actor type").agg({
         "Total affected": "sum",
         "Incident ID": "count"
     }).reset_index()
     fig_actor = px.scatter(actor, x="Incident ID", y="Total affected", size="Total affected",
-                           text="Actor type", color="Actor type", title="🧠 Attacker Persona Analysis",
+                           text="Actor type", color="Actor type", title="🧠 Personal Insight: Attacker Persona Analysis",
                            template="plotly_dark")
     fig_actor.update_traces(textposition='top center')
     fig_actor.update_layout(title_x=0.5)
@@ -134,6 +128,3 @@ def update_visuals(region):
     narration = f"🧠 Personal Insight: {top_country} currently ranks highest in reported incidents."
 
     return fig_sb, fig_tree, fig_map, fig_trend, fig_anim, fig_actor, narration
-
-if __name__ == "__main__":
-    app.run(debug=True)
