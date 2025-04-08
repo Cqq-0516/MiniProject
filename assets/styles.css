@@ -1,0 +1,19 @@
+
+.purple-bg {
+    background: linear-gradient(135deg, #6f42c1, #007bff);
+    min-height: 100vh;
+    padding: 2rem;
+    color: white;
+}
+.text-gradient {
+    background: -webkit-linear-gradient(#d0b3ff, #78baff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.glass-card {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
