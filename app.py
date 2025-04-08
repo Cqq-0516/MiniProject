@@ -1,4 +1,3 @@
-
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc, Input, Output
@@ -12,9 +11,8 @@ df["date"] = pd.to_datetime(df["date"])
 df["year"] = df["date"].dt.year
 df["Region"] = df["Region"].fillna("Unknown")
 
-# Initialize Dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
-server = app.server  # This is the key for gunicorn app:server to work
+server = app.server
 
 app.layout = dbc.Container([
     dbc.Row([
@@ -127,3 +125,6 @@ def update_visuals(region):
     narration = f"🧠 Personal Insight: {top_country} currently ranks highest in reported incidents."
 
     return fig_sb, fig_tree, fig_map, fig_trend, fig_anim, fig_actor, narration
+
+if __name__ == "__main__":
+    app.run_server(debug=True)
